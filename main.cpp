@@ -17,7 +17,7 @@ void Print(Note *basa_note, int N)
 }
 
 int main() {
-    setlocale(LC_ALL, "Rus");
+    setlocale(0, "Rus");
     char check;
     string fileName, rozdelitel, info_plateg, name;
     string name_plat;
@@ -33,8 +33,6 @@ int main() {
         cout << "3. Добавить запись в файл " << endl;
         cout << "4. Вывод на экран по упорядоченным записям  номера телефона" << endl;
         cout << "5. Информация о человеке " << endl;
-        cout << "6. поиск всех людей, живущих на определенной улице" << endl;
-        cout << "7. Поиск телефонов по фамилиям, начинающейся с определенной буквы" << endl;
         cout << "8. Выход " << endl;
         cin >> check;
         switch (check) {
@@ -95,7 +93,67 @@ int main() {
                 Print(basa_note,current_size); // выводим на экран все данные
             }
                 break;
-            
+            case '3':
+            {
+                current_size++;
+                cin.get();
+
+                cout << "Введите фамилию "; cin >> name;
+                input_of_keyboard.setName(name);
+                cout << "Введите телефон "; cin >> number;
+                input_of_keyboard.setNumber(number);
+                cin.get();
+                cout << "Введите день рождения  ";
+                cin>>birthday[0]>>birthday[1]>>birthday[2];
+                input_of_keyboard.setBirthday(birthday);
+
+
+                ofstream out(fileName.c_str(),ios::app);
+                out.imbue(std::locale("rus_rus.1251"));
+                out << input_of_keyboard.getName() << " " << input_of_keyboard.getNumber() << " ";
+                out << input_of_keyboard.getBirthday()  << endl;
+
+            } break;
+
+            case '4':
+            {
+                // 123456789
+                //  (123456789 / 100000000)  == 1
+                //  (123456789 % 100000000) / 10000000 == 2
+                //  (123456789 % 100000000) % 10000000 / 1000000 == 3
+
+                for(int i = 0; i < current_size; i++)
+                    for(int j = 0; j < current_size - 1; j++)
+                        if(basa_note[j].getNumber() / 100000000  > basa_note[j+1].getNumber() / 100000000)
+                        {
+                            swap(basa_note[j],basa_note[j+1]);
+                        } // || basa_note[j].tel_number % 100000000 / 10000000 > basa_note[j+1].tel_number % 100000000 / 10000000)
+                        else if(basa_note[j].getNumber() / 100000000  == basa_note[j+1].getNumber() / 100000000 && basa_note[j].getNumber() % 100000000 / 10000000 > basa_note[j+1].getNumber() % 100000000 / 10000000)
+                        {
+                            swap(basa_note[j],basa_note[j+1]);
+                        }
+                Print(basa_note,current_size);
+            }break;
+            case '5':
+            {
+                bool yes = false;
+                string fam;
+                cout << "Введите фамилию для поиска "; cin >> fam;
+
+                for(int i = 0; i < current_size; i++)
+                    if(basa_note[i].getName() == fam)
+                    {
+                        cout << "Фамилия:  "   << basa_note[i].getName()     << endl;
+                        cout << "Телефон: "    << basa_note[i].getNumber()     << endl;
+                        cout << "Адрес: "      << basa_note[i].getBirthday()      << endl;
+                        yes = true;
+                    }
+                if(!yes) cout << "Нету такого абонента" << endl;
+            }break;
+
+            case '6' : return 1;
+            default:
+                break;
         }
     }
     while(check!='0');
